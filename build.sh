@@ -33,23 +33,25 @@ OPTIONS_INI_FILE=options.ini
 SOURCE_LIST_TMP=.sources.txt
 
 if [ $BUILD_LIB -eq 0 ]; then
+    # Add generic implementation files
     printf '%s\n' \
         src/main.cpp \
         src/ei_porting.cpp \
     > ${SOURCE_LIST_TMP}
 fi
 
+# `find edge-impulse-sdk/CMSIS/DSP/Source/MatrixFunctions/ -maxdepth 1 -type f -name '*.c'` \
+# `find edge-impulse-sdk/CMSIS/DSP/Source/BasicMathFunctions/ -maxdepth 1 -type f -name '*.c'` \
+# `find edge-impulse-sdk/CMSIS/DSP/Source/FastMathFunctions/ -maxdepth 1 -type f -name '*.c'` \
+# `find edge-impulse-sdk/CMSIS/DSP/Source/StatisticsFunctions/ -maxdepth 1 -type f -name '*.c'` \
+# `find edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/ -maxdepth 1 -type f -name '*fft*.c'` \
+# `find edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/ -maxdepth 1 -type f -name '*.c'` \
+# `find edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/ -maxdepth 1 -type f -name '*bit*.c'` \
+
 # This list is directly pulled from here:
 # https://github.com/edgeimpulse/example-standalone-inferencing/blob/master/Makefile
 printf '%s\n' \
     edge-impulse-sdk/tensorflow/lite/c/common.c \
-    `find edge-impulse-sdk/CMSIS/DSP/Source/MatrixFunctions/ -maxdepth 1 -type f -name '*.c'` \
-    `find edge-impulse-sdk/CMSIS/DSP/Source/BasicMathFunctions/ -maxdepth 1 -type f -name '*.c'` \
-    `find edge-impulse-sdk/CMSIS/DSP/Source/FastMathFunctions/ -maxdepth 1 -type f -name '*.c'` \
-    `find edge-impulse-sdk/CMSIS/DSP/Source/StatisticsFunctions/ -maxdepth 1 -type f -name '*.c'` \
-    `find edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/ -maxdepth 1 -type f -name '*fft*.c'` \
-    `find edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/ -maxdepth 1 -type f -name '*.c'` \
-    `find edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/ -maxdepth 1 -type f -name '*bit*.c'` \
     `find tflite-model/ -maxdepth 1 -type f -name '*.cpp'` \
     `find edge-impulse-sdk/dsp/kissfft/ -maxdepth 1 -type f -name '*.cpp'` \
     `find edge-impulse-sdk/dsp/dct/ -maxdepth 1 -type f -name '*.cpp'` \
