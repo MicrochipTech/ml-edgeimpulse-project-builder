@@ -26,6 +26,10 @@ void ei_printf(const char *format, ...) {
     va_end(myargs);
 }
 
+void DebugLog(const char* s) {
+    ei_printf("%s", s);
+}
+
 void ei_printf_float(float f) {
     ei_printf("%f", f);
 }
