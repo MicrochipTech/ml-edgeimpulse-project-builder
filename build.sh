@@ -1,21 +1,21 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -ex
 : ${BUILD_LIB:=0}
 : ${PRJ_NAME:=edgeimpulse}
 : ${DEVICE:=ATSAME54P20A}
 
-if [ $OS == "Windows_NT" ]; then
-    : ${MPLAB_PATH:="$PROGRAMFILES/Microchip/MPLABX/v6.00/mplab_platform/bin"}
-    : ${XC32_PATH:="$PROGRAMFILES/Microchip/xc32/v3.00/bin"}
-elif [ $(uname) == "Darwin" ]; then
-    : ${MPLAB_PATH:=/Applications/microchip/mplabx/v6.00/mplab_platform/bin}
-    : ${XC32_PATH:=/Applications/microchip/xc32/v3.00/bin}
+if [ $OS = "Windows_NT" ]; then
+    : "${MPLAB_PATH:=$PROGRAMFILES/Microchip/MPLABX/v6.00/mplab_platform/bin}"
+    : "${XC32_PATH:=$PROGRAMFILES/Microchip/xc32/v3.00/bin}"
+elif [ $(uname) = "Darwin" ]; then
+    : "${MPLAB_PATH:=/Applications/microchip/mplabx/v6.00/mplab_platform/bin}"
+    : "${XC32_PATH:=/Applications/microchip/xc32/v3.00/bin}"
 else
-    : ${MPLAB_PATH:=/opt/microchip/mplabx/v6.00/mplab_platform/bin}
-    : ${XC32_PATH:=/opt/microchip/xc32/v3.00/bin}
+    : "${MPLAB_PATH:=/opt/microchip/mplabx/v6.00/mplab_platform/bin}"
+    : "${XC32_PATH:=/opt/microchip/xc32/v3.00/bin}"
 fi
 
-if [ $OS == "Windows_NT" ]; then
+if [ $OS = "Windows_NT" ]; then
     PRJMAKEFILESGENERATOR="${MPLAB_PATH}/prjMakefilesGenerator.bat"
     MAKE="$MPLAB_PATH/../../gnuBins/GnuWin32/bin/make.exe"
     # Get around space in path issues with windows
