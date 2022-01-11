@@ -4,7 +4,7 @@ a template mplab X project from an edge impulse C++ source code deployment. This
 script should work for any xc32 supported platform.
 
 Notes:
-- This script has only been tested under linux and [Git Bash](https://gitforwindows.org/).
+- This script has only been tested under linux, [Git Bash](https://gitforwindows.org/), and macOS.
 - options.ini can be modified to set additional project options; to see
   available project options call `prjMakefilesGenerator -setoptions=@ -help`
 - project.ini is just a placeholder - the **languageToolchain*** and **device**
