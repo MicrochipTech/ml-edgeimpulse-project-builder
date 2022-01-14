@@ -48,10 +48,10 @@ fi
 
 # This list is directly pulled from here:
 # https://github.com/edgeimpulse/example-standalone-inferencing/blob/master/Makefile
-# edge-impulse-sdk/dsp/kissfft/*.cpp \
 printf '%s\n' \
     tflite-model/ \
     model-parameters/ \
+    edge-impulse-sdk/dsp/kissfft/*.cpp \
     edge-impulse-sdk/dsp/dct/*.cpp \
     edge-impulse-sdk/dsp/memory.cpp \
     edge-impulse-sdk/tensorflow/lite/kernels/*.cc \
