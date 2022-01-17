@@ -2,12 +2,12 @@
 set -ex
 
 #%% Setup
-: ${PRJ_NAME:=edgeimpulse}
+: ${PRJ_NAME:=libedgeimpulse}
 : ${DEVICE:=ATSAME54P20A}
 
-: ${BUILD_LIB:=0}
-: ${CMSIS_NN:=0}
-: ${CMSIS_DSP:=0}
+: ${BUILD_LIB:=1}
+: ${CMSIS_NN:=1}
+: ${CMSIS_DSP:=1}
 
 # Base configuration files
 : ${PROJECT_INI_FILE:=edgeimpulse.xc32.project.ini}
