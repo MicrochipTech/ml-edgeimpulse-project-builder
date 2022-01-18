@@ -1,6 +1,6 @@
 # Edge Impulse Project Builder
-This repository contains instructions for creating a library object from an
-[Edge Impulse Studio](https://edgeimpulse.com/product) project for any xc32
+This repository contains instructions for integrating an
+[Edge Impulse Studio](https://edgeimpulse.com/product) project into MPLAB X project for any xc32
 supported platform.
 
 Notes:
