@@ -85,3 +85,11 @@ Some special care has to be taken to ensure the library is integrated correctly 
 - The Edge Impulse SDK will automatically determine whether to include the CMSIS
   NN/DSP libraries. You can use `EIDSP_USE_CMSIS_DSP=0` and
   `EI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN=0` to manually disable this behavior.
+
+## Docker Build
+
+To launch Docker build for a specific target build arguments must be set as shown in the included example `.buildargs` files; for example:
+
+`$ docker build -f mchp-edgeimpulse-build.dockerfile -t atsamd21g18a $(cat atsamd21g18a.buildargs | awk '{print "--build-arg " $0}' ) .`
+
+See [packs.download.microchip.com](https://packs.download.microchip.com/) for device family pack listings.
