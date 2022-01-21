@@ -8,6 +8,7 @@ RUN \
         procps \
         unzip \
         ca-certificates \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
 #%% Download and install MPLAB X IDE

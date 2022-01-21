@@ -32,7 +32,8 @@ COPY "${PRJ_PROJECT_FILE}" "${PRJ_OPTIONS_FILE}" /build/
 RUN \
     cd /build/ \
     && unzip "${PRJ_SDK_ZIP}" \
-    && git clone --depth 1 "${GIT_MCHP_PRJ_BUILDER}" . \
+    && git clone --depth 1 "${GIT_MCHP_PRJ_BUILDER}" /tmp/prjbuild \
+    && mv /tmp/prjbuild/* . \
     && chmod a+x ./build.sh \
     && ./build.sh \
     && mkdir -p /dist/ \
