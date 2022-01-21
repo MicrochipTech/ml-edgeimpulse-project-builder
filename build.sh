@@ -1,49 +1,53 @@
 #!/bin/sh
 set -ex
 
-#%% Setup
-: ${PRJ_NAME:=libedgeimpulse}
-: ${DEVICE:=ATSAME54P20A}
+#%% Environment
+: ${XC_NUMBER_BITS:=32}
+: ${XC_VERSION:=3.00}
+: ${MPLABX_VERSION:=6.00}
 
-: ${BUILD_LIB:=1}
-: ${CMSIS_NN:=1}
-: ${CMSIS_DSP:=1}
+#%% Build options
+: ${PRJ_TARGET:=ATSAME54P20A}
+: ${PRJ_CMSIS_NN:=1}
+: ${PRJ_CMSIS_DSP:=1}
+: ${PRJ_BUILD_LIB:=1}
+: ${PRJ_PROJECT_FILE:=edgeimpulse.xc${XC_NUMBER_BITS}.project.ini}
+: ${PRJ_OPTIONS_FILE:=edgeimpulse.xc${XC_NUMBER_BITS}.options.ini}
 
-# Base configuration files
-: ${PROJECT_INI_FILE:=edgeimpulse.xc32.project.ini}
-: ${OPTIONS_INI_FILE:=edgeimpulse.xc32.options.ini}
-
-if [ $OS = "Windows_NT" ]; then
-    : "${MPLAB_PATH:=$PROGRAMFILES/Microchip/MPLABX/v6.00/mplab_platform/bin}"
-    : "${XC_PATH:=$PROGRAMFILES/Microchip/xc32/v3.00/bin}"
-elif [ $(uname) = "Darwin" ]; then
-    : "${MPLAB_PATH:=/Applications/microchip/mplabx/v6.00/mplab_platform/bin}"
-    : "${XC_PATH:=/Applications/microchip/xc32/v3.00/bin}"
+: ${PRJ_NAME:=edgeimpulse.${PRJ_TARGET}.xc${XC_NUMBER_BITS}.${XC_VERSION}}
+#%% Tool paths
+if [ "${OS}" = "Windows_NT" ]; then
+    : "${MPLABX_PATH:=$PROGRAMFILES/Microchip/MPLABX/v${MPLABX_VERSION}/mplab_platform/bin}"
+    : "${XC_PATH:=$PROGRAMFILES/Microchip/xc${XC_NUMBER_BITS}/v${XC_VERSION}/bin}"
+elif [ "$(uname)" = "Darwin" ]; then
+    : "${MPLABX_PATH:=/Applications/microchip/mplabx/v${MPLABX_VERSION}/mplab_platform/bin}"
+    : "${XC_PATH:=/Applications/microchip/xc${XC_NUMBER_BITS}/v${XC_VERSION}/bin}"
 else
-    : "${MPLAB_PATH:=/opt/microchip/mplabx/v6.00/mplab_platform/bin}"
-    : "${XC_PATH:=/opt/microchip/xc32/v3.00/bin}"
+    : "${MPLABX_PATH:=/opt/microchip/mplabx/v${MPLABX_VERSION}/mplab_platform/bin}"
+    : "${XC_PATH:=/opt/microchip/xc${XC_NUMBER_BITS}/v${XC_VERSION}/bin}"
 fi
 
-if [ $OS = "Windows_NT" ]; then
-    PRJMAKEFILESGENERATOR="${MPLAB_PATH}/prjMakefilesGenerator.bat"
-    MAKE="$MPLAB_PATH/../../gnuBins/GnuWin32/bin/make.exe"
+if [ "${OS}" = "Windows_NT" ]; then
+    PRJMAKEFILESGENERATOR="${MPLABX_PATH}/prjMakefilesGenerator.bat"
+    MAKE="${MPLABX_PATH}/../../gnuBins/GnuWin32/bin/make.exe"
     # Get around space in path issues with windows
-    XC_PATH=$(cygpath -d "$XC_PATH")
+    XC_PATH=$(cygpath -d "${XC_PATH}")
 else
-    PRJMAKEFILESGENERATOR="${MPLAB_PATH}/prjMakefilesGenerator.sh"
-    MAKE="$MPLAB_PATH/make"
+    PRJMAKEFILESGENERATOR="${MPLABX_PATH}/prjMakefilesGenerator.sh"
+    MAKE="${MPLABX_PATH}/make"
 fi
 
 #%% Build up list of source files
-SOURCE_LIST_FILE=.${PRJ_NAME}.sources.txt
-rm -f $SOURCE_LIST_FILE
+SOURCE_LIST_FILE=."${PRJ_NAME}".sources.txt
+rm -f "${SOURCE_LIST_FILE}"
 
-if [ $BUILD_LIB -eq 0 ]; then
+set +x
+if [ "${PRJ_BUILD_LIB}" -eq 0 ]; then
     # Add generic implementation files
     printf '%s\n' \
         src/main.cpp \
         src/ei_porting.cpp \
-    >> ${SOURCE_LIST_FILE}
+    >> "${SOURCE_LIST_FILE}"
 fi
 
 # This list is directly pulled from here:
@@ -61,9 +65,9 @@ printf '%s\n' \
     edge-impulse-sdk/tensorflow/lite/micro/memory_planner/*.cc \
     edge-impulse-sdk/tensorflow/lite/core/api/*.cc \
     edge-impulse-sdk/tensorflow/lite/c/common.c \
->> ${SOURCE_LIST_FILE}
+>> "${SOURCE_LIST_FILE}"
 
-if [ $CMSIS_NN -eq 1 ]; then
+if [ "$PRJ_CMSIS_NN" -eq 1 ]; then
     printf '%s\n' \
         edge-impulse-sdk/CMSIS/NN/Source/ActivationFunctions/*.c \
         edge-impulse-sdk/CMSIS/NN/Source/BasicMathFunctions/*.c \
@@ -75,9 +79,9 @@ if [ $CMSIS_NN -eq 1 ]; then
         edge-impulse-sdk/CMSIS/NN/Source/ReshapeFunctions/*.c \
         edge-impulse-sdk/CMSIS/NN/Source/SoftmaxFunctions/*.c \
         edge-impulse-sdk/CMSIS/NN/Source/SVDFunctions/*.c \
-    >> ${SOURCE_LIST_FILE}
+    >> "${SOURCE_LIST_FILE}"
 fi
-if [ $CMSIS_DSP -eq 1 ]; then
+if [ "$PRJ_CMSIS_DSP" -eq 1 ]; then
     printf '%s\n' \
         edge-impulse-sdk/CMSIS/DSP/Source/MatrixFunctions/*.c \
         edge-impulse-sdk/CMSIS/DSP/Source/BasicMathFunctions/*.c \
@@ -87,34 +91,35 @@ if [ $CMSIS_DSP -eq 1 ]; then
         edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/*.c \
         edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*bit*.c \
         edge-impulse-sdk/CMSIS/DSP/Source/SupportFunctions/*.c \
-    >> ${SOURCE_LIST_FILE}
+    >> "${SOURCE_LIST_FILE}"
 fi
+set -x
 
-# Make paths relative to project dir
-echo "$(cat ${SOURCE_LIST_FILE} | awk '{print "../" $0}')" > ${SOURCE_LIST_FILE}
+# (Make paths relative to project dir)
+echo "$(cat ${SOURCE_LIST_FILE} | awk '{print "../" $0}')" > "${SOURCE_LIST_FILE}"
 
 #%% Create project
 rm -rf ${PRJ_NAME}.X
-"$PRJMAKEFILESGENERATOR" -create=@${PROJECT_INI_FILE} ${PRJ_NAME}.X@default \
-    -compilers=${XC_PATH} \
-    -device=${DEVICE}
+"${PRJMAKEFILESGENERATOR}" -create=@"${PRJ_PROJECT_FILE}" "${PRJ_NAME}".X@default \
+    -compilers="${XC_PATH}" \
+    -device="${PRJ_TARGET}"
 
-# Change project to library type (3) manually
-if [ $BUILD_LIB -ne 0 ]; then
-    echo "$(cat ${PRJ_NAME}.X/nbproject/configurations.xml | sed 's|\(<conf name="default" type="\)[0-9]\+|\13|g')" > ${PRJ_NAME}.X/nbproject/configurations.xml
+# (Change project to library type (3) manually)
+if [ "${PRJ_BUILD_LIB}" -ne 0 ]; then
+    echo "$(cat ${PRJ_NAME}.X/nbproject/configurations.xml | sed 's|\(<conf name="default" type="\)[0-9]\+|\13|g')" > "${PRJ_NAME}".X/nbproject/configurations.xml
 fi
 
 #%% Set project configuration
-"$PRJMAKEFILESGENERATOR" -setoptions=@${OPTIONS_INI_FILE} ${PRJ_NAME}.X@default
+"${PRJMAKEFILESGENERATOR}" -setoptions=@"${PRJ_OPTIONS_FILE}" "${PRJ_NAME}".X@default
 
 #%% Add files
-"$PRJMAKEFILESGENERATOR" -setitems ${PRJ_NAME}.X@default \
+"${PRJMAKEFILESGENERATOR}" -setitems "${PRJ_NAME}".X@default \
     -pathmode=relative \
-    -files=@${SOURCE_LIST_FILE}
+    -files=@"${SOURCE_LIST_FILE}"
 
 #%% Finalize project
-if [ $BUILD_LIB -ne 0 ]; then
-    cd ${PRJ_NAME}.X
-    "$MAKE"
-    cp $(find . -name "${PRJ_NAME}.X.a") ../${PRJ_NAME}.a
+if [ "${PRJ_BUILD_LIB}" -ne 0 ]; then
+    cd "${PRJ_NAME}".X
+    "${MAKE}"
+    cp $(find . -name "${PRJ_NAME}.X.a") ../"${PRJ_NAME}".a
 fi
