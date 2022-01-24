@@ -34,12 +34,11 @@ The following steps cover compiling the Edge Impulse library into a static libra
 
 1. Extract the library from the step above directly into this folder.
 
-2. (Optional) Open `options.ini` and modify C as needed.
+2. (Optional) Open `options.ini` and modify as needed.
 
-3. Set the environment variables **PRJ_NAME** **DEVICE** **MPLAB_PATH**
-   **XC_PATH** as desired, then run `build.sh` to generate the library object.
+3. Set the environment variables `PRJ_NAME PRJ_TARGET MPLABX_PATH XC_NUMBER_BITS XC_VERSION` as desired, then run `build.sh` to generate the library object.
    For example:
-   - `DEVICE=ATSAME54P20A PRJ_NAME=libedgeimpulse CMSIS_DSP=1 CMSIS_NN=1 ./build.sh`
+   - `PRJ_TARGET=ATSAME54P20A PRJ_NAME=libedgeimpulse CMSIS_DSP=1 CMSIS_NN=1 ./build.sh`
 
 ## Integration Instructions
 Below are instructions for integrating the library object, compiled with the
