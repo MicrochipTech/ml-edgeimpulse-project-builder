@@ -13,6 +13,7 @@ set -ex
 : ${PRJ_BUILD_LIB:=1}
 : ${PRJ_PROJECT_FILE:=edgeimpulse.xc${XC_NUMBER_BITS}.project.ini}
 : ${PRJ_OPTIONS_FILE:=edgeimpulse.xc${XC_NUMBER_BITS}.options.ini}
+: ${PRJ_MODEL_FOLDER:=impulse}
 
 : ${PRJ_NAME:=edgeimpulse.${PRJ_TARGET}.xc${XC_NUMBER_BITS}.${XC_VERSION}}
 #%% Tool paths
@@ -53,44 +54,44 @@ fi
 # This list is directly pulled from here:
 # https://github.com/edgeimpulse/example-standalone-inferencing/blob/master/Makefile
 printf '%s\n' \
-    tflite-model/ \
-    model-parameters/ \
-    edge-impulse-sdk/dsp/kissfft/*.cpp \
-    edge-impulse-sdk/dsp/dct/*.cpp \
-    edge-impulse-sdk/dsp/memory.cpp \
-    edge-impulse-sdk/tensorflow/lite/kernels/*.cc \
-    edge-impulse-sdk/tensorflow/lite/kernels/internal/*.cc \
-    edge-impulse-sdk/tensorflow/lite/micro/kernels/*.cc \
-    edge-impulse-sdk/tensorflow/lite/micro/*.cc \
-    edge-impulse-sdk/tensorflow/lite/micro/memory_planner/*.cc \
-    edge-impulse-sdk/tensorflow/lite/core/api/*.cc \
-    edge-impulse-sdk/tensorflow/lite/c/common.c \
+    "${PRJ_MODEL_FOLDER}"/tflite-model/ \
+    "${PRJ_MODEL_FOLDER}"/model-parameters/ \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/kissfft/*.cpp \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/dct/*.cpp \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/memory.cpp \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/kernels/*.cc \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/kernels/internal/*.cc \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/micro/kernels/*.cc \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/micro/*.cc \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/micro/memory_planner/*.cc \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/core/api/*.cc \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/c/common.c \
 >> "${SOURCE_LIST_FILE}"
 
 if [ "$PRJ_CMSIS_NN" -eq 1 ]; then
     printf '%s\n' \
-        edge-impulse-sdk/CMSIS/NN/Source/ActivationFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/BasicMathFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/ConcatenationFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/ConvolutionFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/FullyConnectedFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/NNSupportFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/PoolingFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/ReshapeFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/SoftmaxFunctions/*.c \
-        edge-impulse-sdk/CMSIS/NN/Source/SVDFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/ActivationFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/BasicMathFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/ConcatenationFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/ConvolutionFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/FullyConnectedFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/NNSupportFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/PoolingFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/ReshapeFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/SoftmaxFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/NN/Source/SVDFunctions/*.c \
     >> "${SOURCE_LIST_FILE}"
 fi
 if [ "$PRJ_CMSIS_DSP" -eq 1 ]; then
     printf '%s\n' \
-        edge-impulse-sdk/CMSIS/DSP/Source/MatrixFunctions/*.c \
-        edge-impulse-sdk/CMSIS/DSP/Source/BasicMathFunctions/*.c \
-        edge-impulse-sdk/CMSIS/DSP/Source/FastMathFunctions/*.c \
-        edge-impulse-sdk/CMSIS/DSP/Source/StatisticsFunctions/*.c \
-        edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*fft*.c \
-        edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/*.c \
-        edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*bit*.c \
-        edge-impulse-sdk/CMSIS/DSP/Source/SupportFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/DSP/Source/MatrixFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/DSP/Source/BasicMathFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/DSP/Source/FastMathFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/DSP/Source/StatisticsFunctions/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*fft*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*bit*.c \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/CMSIS/DSP/Source/SupportFunctions/*.c \
     >> "${SOURCE_LIST_FILE}"
 fi
 set -x

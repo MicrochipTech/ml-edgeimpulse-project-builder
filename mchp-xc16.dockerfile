@@ -17,7 +17,7 @@ RUN \
 #%% Download and install xc* compiler
 ENV XC_VERSION=1.70
 ENV XC_NUMBER_BITS=16
-ENV X64_PRODUCT_STRING=64-
+ARG X64_PRODUCT_STRING=64-
 RUN \
     wget -qO /tmp/xc"${XC_NUMBER_BITS}".run "http://ww1.microchip.com/downloads/en/DeviceDoc/xc${XC_NUMBER_BITS}-v${XC_VERSION}-full-install-linux${X64_PRODUCT_STRING}installer.run" \
     && chmod a+x /tmp/xc"${XC_NUMBER_BITS}".run \

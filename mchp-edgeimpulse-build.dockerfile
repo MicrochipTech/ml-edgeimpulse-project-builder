@@ -14,27 +14,28 @@ RUN \
     && rm /tmp/tmp-pack.atpack \
     && rm -rf /var/lib/apt/lists/*
 
+ARG GIT_MCHP_PRJ_BUILDER="https://github.com/tjgarcia-mchp/ml-edgeimpulse-project-builder.git"
+RUN \
+    git clone --depth 1 "${GIT_MCHP_PRJ_BUILDER}" /build \
+    && chmod a+x /build/build.sh
+
 #%% Build library
 ARG MPLABX_VERSION
 ARG XC_NUMBER_BITS
 ARG XC_VERSION
-ARG GIT_MCHP_PRJ_BUILDER="https://github.com/tjgarcia-mchp/ml-edgeimpulse-project-builder.git"
+
 ARG PRJ_TARGET
 ARG PRJ_NAME=libedgeimpulse.${PRJ_TARGET}.xc${XC_NUMBER_BITS}.${XC_VERSION}
 ARG PRJ_BUILD_LIB=1
 ARG PRJ_PROJECT_FILE=edgeimpulse.xc${XC_NUMBER_BITS}.project.ini
 ARG PRJ_OPTIONS_FILE=edgeimpulse.xc${XC_NUMBER_BITS}.options.ini
-ARG PRJ_SDK_ZIP=impulse.zip
-COPY "${PRJ_SDK_ZIP}" /build/
-COPY "${PRJ_PROJECT_FILE}" "${PRJ_OPTIONS_FILE}" /build/
+ARG PRJ_MODEL_FOLDER=impulse
 
+COPY "${PRJ_PROJECT_FILE}" "${PRJ_OPTIONS_FILE}" /build/
+COPY "${PRJ_MODEL_FOLDER}" /build/"${PRJ_MODEL_FOLDER}"
 
 RUN \
     cd /build/ \
-    && unzip "${PRJ_SDK_ZIP}" \
-    && git clone --depth 1 "${GIT_MCHP_PRJ_BUILDER}" /tmp/prjbuild \
-    && mv /tmp/prjbuild/* . \
-    && chmod a+x ./build.sh \
     && ./build.sh \
     && mkdir -p /dist/ \
     && mv *.a /dist/
