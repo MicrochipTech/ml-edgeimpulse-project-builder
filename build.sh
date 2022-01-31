@@ -13,7 +13,7 @@ set -ex
 : ${PRJ_BUILD_LIB:=1}
 : ${PRJ_PROJECT_FILE:=edgeimpulse.xc${XC_NUMBER_BITS}.project.ini}
 : ${PRJ_OPTIONS_FILE:=edgeimpulse.xc${XC_NUMBER_BITS}.options.ini}
-: ${PRJ_MODEL_FOLDER:=impulse}
+: ${PRJ_MODEL_FOLDER:=.}
 
 : ${PRJ_NAME:=edgeimpulse.${PRJ_TARGET}.xc${XC_NUMBER_BITS}.${XC_VERSION}}
 #%% Tool paths
@@ -59,6 +59,7 @@ printf '%s\n' \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/kissfft/*.cpp \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/dct/*.cpp \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/memory.cpp \
+    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/classifier/*.cpp \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/kernels/*.cc \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/kernels/internal/*.cc \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/micro/kernels/*.cc \
@@ -115,7 +116,6 @@ fi
 
 #%% Add files
 "${PRJMAKEFILESGENERATOR}" -setitems "${PRJ_NAME}".X@default \
-    -pathmode=relative \
     -files=@"${SOURCE_LIST_FILE}"
 
 #%% Finalize project
