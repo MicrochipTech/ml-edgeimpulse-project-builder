@@ -87,8 +87,19 @@ Some special care has to be taken to ensure the library is integrated correctly 
 
 ## Docker Build
 
-To launch Docker build for a specific target build arguments must be set as shown in the included example `.buildargs` files; for example:
+To launch Docker build for a specific target build arguments must be set as shown in the included example `.buildargs` files. Below is a complete example for building from dockerfile and copying the output to the dist/ directory under the current working directory:
 
-`$ docker build -f mchp-edgeimpulse-build.dockerfile -t atsamd21g18a $(cat atsamd21g18a.buildargs | awk '{print "--build-arg " $0}' ) .`
+```bash
+TARGET=atsame54p20a; \
+   docker build -t xc32 -f xc32.dockerfile . \
+   && docker build . \
+      -f mchp-edgeimpulse-build.dockerfile \
+      -t "$TARGET" \
+      $(cat "${TARGET}".buildargs | awk '{print "--build-arg " $0}' )
+   && docker run \
+      --mount type=bind,source="$(pwd)"/dist,target=/host \
+      "$TARGET" \
+      sh -c "cp -r /dist/* /host/"
+```
 
 See [packs.download.microchip.com](https://packs.download.microchip.com/) for device family pack listings.
