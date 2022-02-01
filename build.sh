@@ -11,6 +11,7 @@ set -ex
 : ${PRJ_CMSIS_NN:=1}
 : ${PRJ_CMSIS_DSP:=1}
 : ${PRJ_BUILD_LIB:=1}
+: ${PRJ_BUILD_AS_CPP:=1}
 : ${PRJ_PROJECT_FILE:=edgeimpulse.xc${XC_NUMBER_BITS}.project.ini}
 : ${PRJ_OPTIONS_FILE:=edgeimpulse.xc${XC_NUMBER_BITS}.options.ini}
 : ${PRJ_MODEL_FOLDER:=.}
@@ -54,12 +55,10 @@ fi
 # This list is directly pulled from here:
 # https://github.com/edgeimpulse/example-standalone-inferencing/blob/master/Makefile
 printf '%s\n' \
-    "${PRJ_MODEL_FOLDER}"/tflite-model/ \
-    "${PRJ_MODEL_FOLDER}"/model-parameters/ \
+    "${PRJ_MODEL_FOLDER}"/tflite-model/*.cpp \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/kissfft/*.cpp \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/dct/*.cpp \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/dsp/memory.cpp \
-    "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/classifier/*.cpp \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/kernels/*.cc \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/kernels/internal/*.cc \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/micro/kernels/*.cc \
@@ -68,6 +67,11 @@ printf '%s\n' \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/core/api/*.cc \
     "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/tensorflow/lite/c/common.c \
 >> "${SOURCE_LIST_FILE}"
+
+if [ "$PRJ_BUILD_AS_CPP" -eq 0 ]; then
+    printf '%s\n' \
+        "${PRJ_MODEL_FOLDER}"/edge-impulse-sdk/classifier/*.cpp
+fi
 
 if [ "$PRJ_CMSIS_NN" -eq 1 ]; then
     printf '%s\n' \
@@ -106,13 +110,13 @@ rm -rf ${PRJ_NAME}.X
     -compilers="${XC_PATH}" \
     -device="${PRJ_TARGET}"
 
+#%% Set project configuration
+"${PRJMAKEFILESGENERATOR}" -setoptions=@"${PRJ_OPTIONS_FILE}" "${PRJ_NAME}".X@default
+
 # (Change project to library type (3) manually)
 if [ "${PRJ_BUILD_LIB}" -ne 0 ]; then
     echo "$(cat ${PRJ_NAME}.X/nbproject/configurations.xml | sed 's|\(<conf name="default" type="\)[0-9]\+|\13|g')" > "${PRJ_NAME}".X/nbproject/configurations.xml
 fi
-
-#%% Set project configuration
-"${PRJMAKEFILESGENERATOR}" -setoptions=@"${PRJ_OPTIONS_FILE}" "${PRJ_NAME}".X@default
 
 #%% Add files
 "${PRJMAKEFILESGENERATOR}" -setitems "${PRJ_NAME}".X@default \
