@@ -36,9 +36,10 @@ The following steps cover compiling the Edge Impulse library into a static libra
 
 2. (Optional) Open `options.ini` and modify as needed.
 
-3. Set the environment variables `PRJ_NAME PRJ_TARGET MPLABX_PATH XC_NUMBER_BITS XC_VERSION` as desired, then run `build.sh` to generate the library object.
-   For example:
-   - `PRJ_TARGET=ATSAME54P20A PRJ_NAME=libedgeimpulse CMSIS_DSP=1 CMSIS_NN=1 ./build.sh`
+3. Set the environment variables `MPLABX_VERSION XC_NUMBER_BITS XC_VERSION` as
+   desired, then run `build.sh` to generate the library object. For example:
+
+   `./build.sh ATSAME54P20A libedgeimpulse .`
 
 ## Integration Instructions
 Below are instructions for integrating the library object, compiled with the
@@ -49,7 +50,8 @@ steps above, into an MPLAB X project.
 
    ![Add library object](assets/addlibrary.png)
 
-2. Add the `src/ei_porting.cpp` file from this repository to your project, this implements the required Edge Impulse stubs.
+2. Add the `src/ei_classifier_porting.cpp` file from this repository to your
+   project, this implements the required Edge Impulse stubs.
 
 3. Use `src/main.cpp` as a template for integrating the Edge Impulse library
    into your project.
@@ -74,8 +76,23 @@ You should now have your Edge Impulse model fully integrated with an MPLAB X
 project. In order to update the deployed model, simply repeat the steps from the
 [build instructions](#edge-impulse-sdk-build-instructions) section above.
 
+## Docker Build
+To launch a Docker build for a specific target build arguments must be set as
+shown in the included example `.args` files. See `docker_build.sh` for a full
+example for building the docker image and generating the Edge Impulse
+library/project. To run the script with non-default arguments, just set the
+corresponding variables in your environment e.g.:
+
+```bash
+PRJ_TARGET=ATSAME54P20A BUILD_ARGS_FILE=./SAME54.args PRJ_BUILD_LIB=1 ./docker_build.sh
+```
+
+See [packs.download.microchip.com](https://packs.download.microchip.com/) for
+device family pack listings.
+
 ## Additional Notes
-Some special care has to be taken to ensure the library is integrated correctly with your project:
+Some special care has to be taken to ensure the library is integrated correctly
+with your project:
 
 - If the CMSIS libraries are included in the build, make sure your project
   doesn't link the pre-built CMSIS library optionally included with MPLAB
@@ -85,21 +102,3 @@ Some special care has to be taken to ensure the library is integrated correctly 
   NN/DSP libraries. You can use `EIDSP_USE_CMSIS_DSP=0` and
   `EI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN=0` to manually disable this behavior.
 
-## Docker Build
-
-To launch Docker build for a specific target build arguments must be set as shown in the included example `.buildargs` files. Below is a complete example for building from dockerfile and copying the output to the dist/ directory under the current working directory:
-
-```bash
-TARGET=atsame54p20a; \
-   docker build -t xc32 -f xc32.dockerfile . \
-   && docker build . \
-      -f mchp-edgeimpulse-build.dockerfile \
-      -t "$TARGET" \
-      $(cat "${TARGET}".buildargs | awk '{print "--build-arg " $0}' )
-   && docker run \
-      --mount type=bind,source="$(pwd)"/dist,target=/host \
-      "$TARGET" \
-      sh -c "cp -r /dist/* /host/"
-```
-
-See [packs.download.microchip.com](https://packs.download.microchip.com/) for device family pack listings.

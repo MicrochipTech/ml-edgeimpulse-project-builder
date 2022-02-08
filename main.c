@@ -5,14 +5,15 @@
     Microchip Technology Inc.
 
   File Name:
-    main.cpp
+    main.c
 
   Summary:
     This file contains the "main" function for a project.
 
   Description:
-    This file is a template for implementing an Edge Impulse model. It
-    implements all stubs required by the Edge Impulse SDK.
+    This file contains the "main" function for a project.  The
+    "main" function calls the "SYS_Initialize" function to initialize the state
+    machines of all modules in the system
  *******************************************************************************/
 
 // *****************************************************************************
@@ -21,11 +22,12 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#include <cstdint>
-#include <cstdlib>                     // Defines EXIT_FAILURE
-#include <cstdbool>                    // Defines true
-#include "edge-impulse-sdk/classifier/ei_run_classifier.h"
-#include "edge-impulse-sdk/dsp/numpy.hpp"
+#include <stdint.h>
+#include <stdlib.h>                     // Defines EXIT_FAILURE
+#include <stdbool.h>                    // Defines true
+#include "edge-impulse-sdk/dsp/numpy_types.h"
+#include "edge-impulse-sdk/porting/ei_classifier_porting.h"
+#include "edge-impulse-sdk/classifier/ei_classifier_types.h"
 #include "model-parameters/model_metadata.h"
 
 // *****************************************************************************
@@ -49,7 +51,7 @@ uint64_t ei_read_timer_us() {
     return 0;
 }
 
-extern "C" int get_feature_data(size_t offset, size_t length, float *out_ptr) {
+int get_feature_data(size_t offset, size_t length, float *out_ptr) {
     /* Implement signal data retrieval routine
     *
     *  Note: An alternative to implementing this function is to pass a buffer to
@@ -66,21 +68,20 @@ extern "C" int get_feature_data(size_t offset, size_t length, float *out_ptr) {
 
 int main ( void )
 {
-      /* Initialize all modules */
-//    SYS_Initialize ( NULL );
+    run_classifier_init();
 
     while ( true )
     {
         /* Define the input data */
-        ei::signal_t signal;
+        signal_t signal;
 
         // Option 1: Pass an existing buffer
         float raw_features[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];
-        numpy::signal_from_buffer(&raw_features[0], EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, &signal);
+        // numpy::signal_from_buffer(&raw_features[0], EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, &signal);
 
         // Option 2: Use a callback to retrieve data
-        // signal.total_length = EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE;
-        // signal.get_data = &get_feature_data;
+        signal.total_length = EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE;
+        signal.get_data = &get_feature_data;
 
         /* Make inference */
         ei_impulse_result_t result;
