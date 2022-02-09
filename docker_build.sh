@@ -5,14 +5,14 @@ set -ex
 : ${BUILD_ARGS_FILE:=./SAMD21.args}
 : ${PRJ_BUILD_LIB:=1}
 
-IMAGE_TAG=$(basename ${BUILD_ARGS_FILE%.*} | tr [:upper:] [:lower:])
+IMAGE_TAG=$(basename ${BUILD_ARGS_FILE%%.args} | tr [:upper:] [:lower:])
 docker build . \
-    -f mchp-edgeimpulse-build.dockerfile \
+    -f Dockerfile \
     -t $IMAGE_TAG \
     $(cat ${BUILD_ARGS_FILE} | awk '{print "--build-arg " $0}' )
 
 mkdir -p dist
-rm -rf dist/*
+rm -irf dist/*
 
 # Git Bash screws up paths when running docker, disabled with MSYS_NO_PATHCONV=1
 MSYS_NO_PATHCONV=1 docker run \

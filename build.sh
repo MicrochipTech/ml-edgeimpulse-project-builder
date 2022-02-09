@@ -8,7 +8,7 @@ fi
 
 #%% Environment
 : ${XC_NUMBER_BITS:=32}
-: ${XC_VERSION:=3.00}
+: ${XC_VERSION:=4.00}
 : ${MPLABX_VERSION:=6.00}
 
 #%% Build options
