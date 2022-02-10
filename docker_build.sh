@@ -1,23 +1,38 @@
 #!/bin/sh
 set -ex
 
-: ${PRJ_TARGET:=ATSAMD21G18A}
-: ${BUILD_ARGS_FILE:=./SAMD21.args}
-: ${PRJ_BUILD_LIB:=1}
+if [ "$#" -lt 2 ]; then
+    echo "usage: $0 <target-name> <project-args-file>"
+    exit 1
+fi
 
-IMAGE_TAG=$(basename ${BUILD_ARGS_FILE%%.args} | tr [:upper:] [:lower:])
+# Input args
+PRJ_TARGET=${1}
+PRJ_ARGS_FILE=${2}
+: ${PRJ_BUILD_LIB:=1}
+PRJ_NAME=$(basename "${PRJ_ARGS_FILE%.*}" | tr [:upper:] [:lower:])
+
+# Source build args
+. "${PRJ_ARGS_FILE}"
+
+# Check required build args
+test -n "${XC_NUMBER_BITS}"
+test -n "${DFP_NAME}"
+test -n "${DFP_VERSION}"
+
 docker build . \
     -f Dockerfile \
-    -t $IMAGE_TAG \
-    $(cat ${BUILD_ARGS_FILE} | awk '{print "--build-arg " $0}' )
+    -t "${PRJ_NAME}" \
+    $(cat "${PRJ_ARGS_FILE}" | awk '{print "--build-arg " $0}' )
 
 mkdir -p dist
-rm -irf dist/*
+rm -rf dist/*
 
 # Git Bash screws up paths when running docker, disabled with MSYS_NO_PATHCONV=1
 MSYS_NO_PATHCONV=1 docker run \
     --rm \
     -v "$(pwd)"/dist:/dist \
-    -e PRJ_BUILD_LIB=$PRJ_BUILD_LIB \
-    $IMAGE_TAG \
-    $PRJ_TARGET edge-impulse-template /dist
+    -e PRJ_BUILD_LIB="${PRJ_BUILD_LIB}" \
+    --env-file "${PRJ_ARGS_FILE}" \
+    "${PRJ_NAME}" \
+    "${PRJ_TARGET}" "${PRJ_NAME}" /dist

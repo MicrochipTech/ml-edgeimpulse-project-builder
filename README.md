@@ -36,10 +36,33 @@ The following steps cover compiling the Edge Impulse library into a static libra
 
 2. (Optional) Open `options.ini` and modify as needed.
 
-3. Set the environment variables `MPLABX_VERSION XC_NUMBER_BITS XC_VERSION` as
+3. Set the environment variables `MPLABX_VERSION XC_VERSION XC_NUMBER_BITS` as
    desired, then run `build.sh` to generate the library object. For example:
 
-   `./build.sh ATSAME54P20A libedgeimpulse .`
+   ```bash
+   MPLABX_VERSION=6.00 XC_VERSION=4.00 XC_NUMBER_BITS=32 ./build.sh ATSAME54P20A libedgeimpulse .
+   ```
+
+   If MPLAB X or the XC compiler are in non-default install locations, set the
+   corresponding path directly through the `MPLABX_PATH` and `XC_PATH`
+   environment variables.
+
+## Docker Build
+To launch a Docker build for a specific target build arguments must be set as
+shown in the included example `.args` files. See `docker_build.sh` for a full
+example for building the docker image and generating the Edge Impulse
+library/project. This script can be run by passing the target name and .args
+file e.g.:
+
+```bash
+./docker_build.sh ATSAME54P20A ./SAME54.args
+```
+
+This will output the result of the build into a folder `dist/` under your
+current working directory.
+
+See [packs.download.microchip.com](https://packs.download.microchip.com/) for
+device family pack listings.
 
 ## Integration Instructions
 Below are instructions for integrating the library object, compiled with the
@@ -75,20 +98,6 @@ steps above, into an MPLAB X project.
 You should now have your Edge Impulse model fully integrated with an MPLAB X
 project. In order to update the deployed model, simply repeat the steps from the
 [build instructions](#edge-impulse-sdk-build-instructions) section above.
-
-## Docker Build
-To launch a Docker build for a specific target build arguments must be set as
-shown in the included example `.args` files. See `docker_build.sh` for a full
-example for building the docker image and generating the Edge Impulse
-library/project. To run the script with non-default arguments, just set the
-corresponding variables in your environment e.g.:
-
-```bash
-PRJ_TARGET=ATSAME54P20A BUILD_ARGS_FILE=./SAME54.args PRJ_BUILD_LIB=1 ./docker_build.sh
-```
-
-See [packs.download.microchip.com](https://packs.download.microchip.com/) for
-device family pack listings.
 
 ## Additional Notes
 Some special care has to be taken to ensure the library is integrated correctly

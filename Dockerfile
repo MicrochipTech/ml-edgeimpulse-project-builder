@@ -1,6 +1,5 @@
 FROM debian:stable-slim
 
-# LABEL version="${XC_VERSION}.xc32.mchp"
 RUN \
     apt-get update \
     && apt-get install --no-install-recommends -y \
@@ -24,7 +23,7 @@ RUN \
     && rm -rf /opt/microchip/mplabx/v${MPLABX_VERSION}/packs/Microchip/*_DFP \
     && rm -rf /opt/microchip/mplabx/v${MPLABX_VERSION}/mplab_platform/browser-lib
 
-#%% Download and install xc* compiler
+#%% Download and install xc16 compiler
 ARG XC16_VERSION=1.70
 ARG XC16_X64_PRODUCT_STRING=64-
 ENV XC16_VERSION=${XC16_VERSION}
@@ -66,11 +65,10 @@ RUN \
 
 #%% Set up image as a build executable
 ARG XC_NUMBER_BITS
-ARG XC_VERSION
+ENV XC_NUMBER_BITS=${XC_NUMBER_BITS}
 ENV MPLABX_PATH=/opt/microchip/mplabx/v${MPLABX_VERSION}/mplab_platform/bin
-ENV XC_PATH=/opt/microchip/xc${XC_NUMBER_BITS}/v${XC_VERSION}/bin
-ENV PRJ_PROJECT_FILE=edgeimpulse.xc${XC_NUMBER_BITS}.project.ini
-ENV PRJ_OPTIONS_FILE=edgeimpulse.xc${XC_NUMBER_BITS}.options.ini
+ENV PRJ_PROJECT_FILE=xc${XC_NUMBER_BITS}.project.ini
+ENV PRJ_OPTIONS_FILE=xc${XC_NUMBER_BITS}.options.ini
 
 COPY build.sh /build/
 COPY ${PRJ_PROJECT_FILE} ${PRJ_OPTIONS_FILE} /build/
