@@ -55,7 +55,7 @@ library/project. This script can be run by passing the target name and .args
 file e.g.:
 
 ```bash
-./docker_build.sh ATSAME54P20A ./SAME54.args
+./docker_build.sh ATSAME54P20A args/SAME54.args
 ```
 
 This will output the result of the build into a folder `dist/` under your
