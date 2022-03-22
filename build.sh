@@ -7,10 +7,10 @@ if [ "$#" -lt 2 ]; then
 fi
 
 #%% Environment
-test -n "${XC_NUMBER_BITS}" \
-|| test -n "${XC_PATH}"
-test -n "${MPLABX_VERSION}" \
-|| test -n "${MPLABX_PATH}"
+test -n ${XC_NUMBER_BITS} \
+    || ( test -n ${PRJ_PROJECT_FILE} \
+         && test -n ${PRJ_OPTIONS_FILE} \
+         && test -n ${XC_PATH} )
 
 #%% Build options
 PRJ_TARGET=${1}
@@ -28,15 +28,26 @@ test -e "${PRJ_OPTIONS_FILE}" \
 
 #%% Tool paths
 if [ "${OS}" = "Windows_NT" ]; then
-    : ${MPLABX_PATH:="$PROGRAMFILES/Microchip/MPLABX/v${MPLABX_VERSION}/mplab_platform/bin"}
+    MPLABX_ROOT="$PROGRAMFILES/Microchip/MPLABX"
     XC_ROOT="$PROGRAMFILES/Microchip/xc${XC_NUMBER_BITS}"
 elif [ "$(uname)" = "Darwin" ]; then
-    : ${MPLABX_PATH:="/Applications/microchip/mplabx/v${MPLABX_VERSION}/mplab_platform/bin"}
+    MPLABX_ROOT="/Applications/microchip/mplabx"
     XC_ROOT="/Applications/microchip/xc${XC_NUMBER_BITS}"
 else
-    : ${MPLABX_PATH:="/opt/microchip/mplabx/v${MPLABX_VERSION}/mplab_platform/bin"}
+    MPLABX_ROOT="/opt/microchip/mplabx"
     XC_ROOT="/opt/microchip/xc${XC_NUMBER_BITS}"
 fi
+
+if [ -z "${MPLABX_PATH}" ] && [ -z "${MPLABX_VERSION}" ] && [ -e "${MPLABX_ROOT}" ]; then
+    # Select latest installed version
+    MPLABX_VERSION=$(\
+        find "${MPLABX_ROOT}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; \
+        | sed -n 's/^v\([0-9]\+\.[0-9]\+\)$/\1/p' \
+        | sort -gr | head -n1 \
+        )
+fi
+
+: ${MPLABX_PATH:="${MPLABX_ROOT}/v${MPLABX_VERSION}/mplab_platform/bin"}
 
 if [ -z "${XC_PATH}" ] && [ -z "${XC_VERSION}" ] && [ -e "${XC_ROOT}" ]; then
     # Select latest installed version
@@ -48,6 +59,9 @@ if [ -z "${XC_PATH}" ] && [ -z "${XC_VERSION}" ] && [ -e "${XC_ROOT}" ]; then
 fi
 
 : ${XC_PATH:="${XC_ROOT}/v${XC_VERSION}/bin"}
+
+#%% Check tools exist before going any further
+test -e "${XC_PATH}" && test -e "${MPLABX_PATH}"
 
 if [ "${OS}" = "Windows_NT" ]; then
     PRJMAKEFILESGENERATOR="${MPLABX_PATH}/prjMakefilesGenerator.bat"
