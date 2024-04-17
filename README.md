@@ -14,6 +14,18 @@ Notes:
   **device** variables are replaced when building the project - others will take
   default values if unspecified.
 
+## Prerequisites
+* MPLAB® X IDE *>=6.00* (https://microchip.com/mplab/mplab-x-ide)
+* XCode *>=12.0* (https://developer.apple.com/xcode/)
+* Edge Impulse CLI (https://github.com/edgeimpulse/edge-impulse-cli)
+* Edge Impulse Stand-alone Inferencing (C++) (https://github.com/edgeimpulse/example-standalone-inferencing)
+* Docker (https://www.docker.com/)
+* Docker Compose (https://docs.docker.com/compose/)
+* Python *>=3.6* (https://www.python.org/downloads/)
+
+
+
+
 ## Software Used
 * MPLAB® X IDE *>=6.00* (https://microchip.com/mplab/mplab-x-ide)
 
@@ -41,6 +53,11 @@ The following steps cover compiling the Edge Impulse library into a static libra
 
    ```bash
    MPLABX_VERSION=6.00 XC_VERSION=4.00 XC_NUMBER_BITS=32 ./build.sh ATSAME54P20A libedgeimpulse .
+   ```
+
+   On OSX:
+   ```bash
+   MPLABX_VERSION=6.15 XC_VERSION=4.35 OS_TYPE=osx Executable_TYPE=dmg XC_NUMBER_BITS=32 ./build.sh ATSAME54P20A libedgeimpulse .
    ```
 
    If MPLAB X or the XC compiler are in non-default install locations, set the

@@ -7,10 +7,10 @@ if [ "$#" -lt 2 ]; then
 fi
 
 #%% Environment
-test -n ${XC_NUMBER_BITS} \
-    || ( test -n ${PRJ_PROJECT_FILE} \
-         && test -n ${PRJ_OPTIONS_FILE} \
-         && test -n ${XC_PATH} )
+test -n ${XC_NUMBER_BITS} ||
+    (test -n ${PRJ_PROJECT_FILE} &&
+        test -n ${PRJ_OPTIONS_FILE} &&
+        test -n ${XC_PATH})
 
 #%% Build options
 PRJ_TARGET=${1}
@@ -23,8 +23,8 @@ DSTDIR=${3:-.}
 : ${PRJ_CMSIS_DSP:=1}
 : ${PRJ_BUILD_AS_CPP:=1}
 
-test -e "${PRJ_OPTIONS_FILE}" \
-&& test -e "${PRJ_PROJECT_FILE}"
+test -e "${PRJ_OPTIONS_FILE}" &&
+    test -e "${PRJ_PROJECT_FILE}"
 
 #%% Tool paths
 if [ "${OS}" = "Windows_NT" ]; then
@@ -40,22 +40,22 @@ fi
 
 if [ -z "${MPLABX_PATH}" ] && [ -z "${MPLABX_VERSION}" ] && [ -e "${MPLABX_ROOT}" ]; then
     # Select latest installed version
-    MPLABX_VERSION=$(\
-        find "${MPLABX_ROOT}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; \
-        | sed -n 's/^v\([0-9]\+\.[0-9]\+\)$/\1/p' \
-        | sort -gr | head -n1 \
-        )
+    MPLABX_VERSION=$(
+        find "${MPLABX_ROOT}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; |
+            sed -n 's/^v\([0-9]\+\.[0-9]\+\)$/\1/p' |
+            sort -gr | head -n1
+    )
 fi
 
 : ${MPLABX_PATH:="${MPLABX_ROOT}/v${MPLABX_VERSION}/mplab_platform/bin"}
 
 if [ -z "${XC_PATH}" ] && [ -z "${XC_VERSION}" ] && [ -e "${XC_ROOT}" ]; then
     # Select latest installed version
-    XC_VERSION=$(\
-        find "${XC_ROOT}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; \
-        | sed -n 's/^v\([0-9]\+\.[0-9]\+\)$/\1/p' \
-        | sort -gr | head -n1 \
-        )
+    XC_VERSION=$(
+        find "${XC_ROOT}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; |
+            sed -n 's/^v\([0-9]\+\.[0-9]\+\)$/\1/p' |
+            sort -gr | head -n1
+    )
 fi
 
 : ${XC_PATH:="${XC_ROOT}/v${XC_VERSION}/bin"}
@@ -82,7 +82,7 @@ if [ "${PRJ_BUILD_LIB}" -eq 0 ]; then
     # Add generic implementation files
     printf '%s\n' \
         src/ \
-    >> "${SOURCE_LIST_FILE}"
+        >>"${SOURCE_LIST_FILE}"
 fi
 
 # This list is directly pulled from here:
@@ -93,6 +93,8 @@ printf '%s\n' \
     edge-impulse-sdk/dsp/kissfft/*.cpp \
     edge-impulse-sdk/dsp/dct/*.cpp \
     edge-impulse-sdk/dsp/memory.cpp \
+    edge-impulse-sdk/porting/posix/*.c* \
+    edge-impulse-sdk/porting/mingw32/*.c* \
     edge-impulse-sdk/tensorflow/lite/kernels/*.cc \
     edge-impulse-sdk/tensorflow/lite/kernels/internal/*.cc \
     edge-impulse-sdk/tensorflow/lite/micro/kernels/*.cc \
@@ -100,7 +102,7 @@ printf '%s\n' \
     edge-impulse-sdk/tensorflow/lite/micro/memory_planner/*.cc \
     edge-impulse-sdk/tensorflow/lite/core/api/*.cc \
     edge-impulse-sdk/tensorflow/lite/c/common.c \
->> "${SOURCE_LIST_FILE}"
+    >>"${SOURCE_LIST_FILE}"
 
 if [ "$PRJ_BUILD_AS_CPP" -eq 0 ]; then
     printf '%s\n' \
@@ -119,7 +121,7 @@ if [ "$PRJ_CMSIS_NN" -eq 1 ]; then
         edge-impulse-sdk/CMSIS/NN/Source/ReshapeFunctions/*.c \
         edge-impulse-sdk/CMSIS/NN/Source/SoftmaxFunctions/*.c \
         edge-impulse-sdk/CMSIS/NN/Source/SVDFunctions/*.c \
-    >> "${SOURCE_LIST_FILE}"
+        >>"${SOURCE_LIST_FILE}"
 fi
 if [ "$PRJ_CMSIS_DSP" -eq 1 ]; then
     printf '%s\n' \
@@ -131,12 +133,12 @@ if [ "$PRJ_CMSIS_DSP" -eq 1 ]; then
         edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/*.c \
         edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*bit*.c \
         edge-impulse-sdk/CMSIS/DSP/Source/SupportFunctions/*.c \
-    >> "${SOURCE_LIST_FILE}"
+        >>"${SOURCE_LIST_FILE}"
 fi
 set -x
 
 # (Make paths relative to project dir)
-echo "$(cat ${SOURCE_LIST_FILE} | awk '{print "../" $0}')" > "${SOURCE_LIST_FILE}"
+echo "$(cat ${SOURCE_LIST_FILE} | awk '{print "../" $0}')" >"${SOURCE_LIST_FILE}"
 
 #%% Create project
 rm -rf ${PRJ_NAME}.X
@@ -149,7 +151,7 @@ rm -rf ${PRJ_NAME}.X
 
 # (Change project to library type (3) manually)
 if [ "${PRJ_BUILD_LIB}" -ne 0 ]; then
-    echo "$(cat ${PRJ_NAME}.X/nbproject/configurations.xml | sed 's|\(<conf name="default" type="\)[0-9]\+|\13|g')" > "${PRJ_NAME}".X/nbproject/configurations.xml
+    echo "$(cat ${PRJ_NAME}.X/nbproject/configurations.xml | sed 's|\(<conf name="default" type="\)[0-9]\+|\13|g')" >"${PRJ_NAME}".X/nbproject/configurations.xml
 fi
 
 #%% Add files
@@ -159,17 +161,17 @@ fi
 
 #%% Finalize project
 if [ "${PRJ_BUILD_LIB}" -ne 0 ]; then
-    cd "${PRJ_NAME}".X \
-    && "${MAKE}" \
-    && cp $(find . -name "${PRJ_NAME}.X.a") ../"${PRJ_NAME}".a \
-    && cd ..
+    cd "${PRJ_NAME}".X &&
+        "${MAKE}" &&
+        cp $(find . -name "${PRJ_NAME}.X.a") ../"${PRJ_NAME}".a &&
+        cd ..
 fi
 
 if [ "$(readlink -f ${DSTDIR})" != "$PWD" ]; then
-    mkdir -p "${DSTDIR}" \
-    && mv \
-        $(test -e "${PRJ_NAME}.a" && echo "${PRJ_NAME}.a") \
-        *.X \
-        src edge-impulse-sdk tflite-model model-parameters \
-        "${DSTDIR}"
+    mkdir -p "${DSTDIR}" &&
+        mv \
+            $(test -e "${PRJ_NAME}.a" && echo "${PRJ_NAME}.a") \
+            *.X \
+            src edge-impulse-sdk tflite-model model-parameters \
+            "${DSTDIR}"
 fi
