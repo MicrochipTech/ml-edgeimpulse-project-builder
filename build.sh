@@ -6,7 +6,7 @@ if [ "$#" -lt 2 ]; then
     exit 1
 fi
 
-#%% Environment
+#%% Environment checks
 test -n ${XC_NUMBER_BITS} ||
     (test -n ${PRJ_PROJECT_FILE} &&
         test -n ${PRJ_OPTIONS_FILE} &&
